@@ -15,19 +15,19 @@ from .permissions import IsOwnerOrReadOnly
 class BroadcastTypeViewSet(viewsets.ModelViewSet):
     queryset = BroadcastType.objects.all()
     serializer_class = BroadcastTypeSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class BroadcastViewSet(viewsets.ModelViewSet):
     queryset = Broadcast.objects.all()
     serializer_class = BroadcastSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAdminUser,)
 
 
 # TODO get, post, patch, put for comments
