@@ -1,22 +1,13 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
+# from django.conf import settings
+# from django.conf.urls.static import static
 
-from django.contrib.auth.models import User
+from rest_framework import routers
+# from rest_framework_simplejwt import views as jwt_views
 
-from rest_framework import routers, serializers, viewsets
+from broadcast.views import UserViewSet
 
-# Serializers define the API representation.
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ['url', 'username', 'email', 'is_staff']
-
-# ViewSets define the view behavior.
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
@@ -27,7 +18,11 @@ app_name = "broadcast"
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('', include(router.urls)),
-    path("api-auth/", include("rest_framework.urls", namespace='rest_framework')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('core/', include('core.urls')),
+    path("api-auth/",
+         include("rest_framework.urls", namespace='rest_framework')),
+    # path('api/token/', jwt_views.TokenObtainPairView.as_view(),
+    #      name='token_obtain_pair'),
+    # path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(),
+    #      name='token_refresh'),
+]

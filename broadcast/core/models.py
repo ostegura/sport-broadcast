@@ -31,7 +31,7 @@ class Broadcast(models.Model):
         verbose_name_plural = "Broadcasts"
 
     def __str__(self):
-        return f'{self.title} - {self.date}'
+        return f'{self.title} {self.date}'
 
     def save(self, *args, **kwargs):
         super(Broadcast, self).save(*args, **kwargs)
@@ -46,8 +46,8 @@ class Event(models.Model):
         verbose_name = "Event"
         verbose_name_plural = "Events"
 
-        def __str__(self):
-            return f'{self.broadcast.title} {self.creation_date}'
+    def __str__(self):
+        return f'{self.broadcast.title} {self.creation_date}'
 
     def save(self, *args, **kwargs):
         super(Event, self).save(*args, **kwargs)
