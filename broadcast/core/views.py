@@ -1,13 +1,15 @@
-from django.http import Http404
+from django.contrib.auth.models import User
 
-from rest_framework.response import Response
+from rest_framework.decorators import api_view
+# from rest_framework.response import Response
 from rest_framework import permissions, status
 from rest_framework import viewsets, views, generics
+from rest_framework.reverse import reverse
 
 from .models import (BroadcastType, Broadcast, Event, Comment)
 
 from .serializers import (BroadcastTypeSerializer, BroadcastSerializer,
-                          EventSerializer, CommentSerializer)
+                          EventSerializer, CommentSerializer, UserSerializer)
 
 from .permissions import IsOwnerOrReadOnly
 
@@ -30,61 +32,41 @@ class EventViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAdminUser,)
 
 
-# TODO get, post, patch, put for comments
-class CommentListView(views.APIView):
-    permission_classes = (permissions.IsAuthenticated,
-                          permissions.IsAdminUser)
-
-    def get(self, request, format=None):
-        comments = Comment.objects.all()
-        serializer = CommentSerializer(comments, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def post(self, request, format=None):
-        serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
-class CommentDetailView(views.APIView):
-    # queryset = Comment.objects.all()
-    permission_classes = (permissions.IsAuthenticated,
-                          permissions.IsAdminUser)
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
-    def get_object(self, pk):
-        try:
-            return Comment.objects.get(pk=pk)
-        except Comment.DoesNotExist:
-            raise Http404
 
-    def get(self, request, pk, format=None):
-        comment = self.get_object(pk)
-        serializer = CommentSerializer(comment)
-        return Response(serializer.data)
+class CommentListView(generics.ListCreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = (permissions.AllowAny, )
 
-    def put(self, request, pk, format=None):
-        comment = self.get_object(pk)
-        serializer = CommentSerializer(comment, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
+class CommentDetailView(generics.RetrieveUpdateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = (permissions.AllowAny, )
 
 
 class CommentDeleteView(generics.DestroyAPIView):
+    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = (permissions.IsAdminUser,
-                          IsOwnerOrReadOnly,)  # moderator?
+                          IsOwnerOrReadOnly, )  # moderator?
 
-    def get_queryset(self):
-        queryset = Comment.objects.filter(id=self.kwargs['pk'])
-        return queryset
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance.is_default() == True:
-            return Response("Cannot delete default system category",
-                            status=status.HTTP_400_BAD_REQUEST)
-        self.perform_destroy(instance)
+# @api_view(['GET'])
+# def api_root(request, format=None):
+#     return Response({
+#         'users': reverse('user-list', request=request, format=format),
+#         'comments': reverse('comment-list', request=request, format=format),
+#     })
