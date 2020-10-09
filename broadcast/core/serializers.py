@@ -55,4 +55,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ('url', 'id', 'username', 'user_comments')
+        fields = ('url', 'id', 'first_name', 'last_name',
+                  'username', 'password', 'user_comments')
+        extra_kwargs = {'password': {'write_only': True}}

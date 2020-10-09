@@ -5,6 +5,9 @@ from rest_framework.decorators import api_view
 from rest_framework import permissions, status
 from rest_framework import viewsets, views, generics
 from rest_framework.reverse import reverse
+# from rest_framework.authentication import TokenAuthentication
+# from rest_framework.authtoken.serializers import AuthTokenSerializer
+# from rest_framework.authtoken.views import ObtainAuthToken
 
 from .models import (BroadcastType, Broadcast, Event, Comment)
 
@@ -32,41 +35,40 @@ class EventViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAdminUser,)
 
 
-class UserList(generics.ListAPIView):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
-class UserDetail(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class CommentListView(generics.ListCreateAPIView):
+class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = (permissions.AllowAny, )
+
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'create':
+            permission_classes = [permissions.IsAuthenticated]
+        elif self.action == 'list':
+            permission_classes = [permissions.IsAuthenticated]
+        elif self.action == 'retrieve' or self.action == 'update' or self.action == 'partial_update':
+            permission_classes = [permissions.IsAuthenticated]
+        elif self.action == 'destroy':
+            permission_classes = [permissions.IsAdminUser, IsOwnerOrReadOnly]
+        return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
 
-class CommentDetailView(generics.RetrieveUpdateAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = (permissions.AllowAny, )
+# class LoginView(ViewSet):
+#     serializer_class = AuthTokenSerializer
+
+#     def create(request):
+#         return ObtainAuthToken().post(request)
 
 
-class CommentDeleteView(generics.DestroyAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = (permissions.IsAdminUser,
-                          IsOwnerOrReadOnly, )  # moderator?
-
-
-# @api_view(['GET'])
-# def api_root(request, format=None):
-#     return Response({
-#         'users': reverse('user-list', request=request, format=format),
-#         'comments': reverse('comment-list', request=request, format=format),
-#     })
+# class LogoutView(APIView):
+#     def get(self, request, format=None):
+#         request.user.auth_token.delete()
+#         return Response(status=status.HTTP_200_OK)
