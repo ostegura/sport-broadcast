@@ -9,6 +9,7 @@ distlib==0.3.0
 distro==1.4.0
 Django==3.1.2
 django-filter==2.4.0
+django-rest-framework-roles==0.6
 djangorestframework==3.12.1
 djangorestframework-simplejwt==4.4.0
 html5lib==1.0.1

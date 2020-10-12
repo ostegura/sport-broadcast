@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     'core',
     'rest_framework'
 ]
@@ -50,7 +51,8 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 50,
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    ]
+    ],
+    "DEFAULT_FILTER_BACKENDS": ['django_filters.rest_framework.DjangoFilterBackend'],
     # "DEFAULT_AUTHENTICATION_CLASSES": [
     #     'rest_framework_simplejwt.authentication.JWTAuthentication',
     # ],
