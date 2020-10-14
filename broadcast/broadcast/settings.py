@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_filters',
     'core',
-    'rest_framework'
+    'rest_framework',
+    'jwtauth',
 ]
 
 # AUTH_USER_MODEL = 'auth.User'
@@ -58,6 +59,7 @@ REST_FRAMEWORK = {
     "TEST_REQUEST_DEFAULT_FORMAT": 'json',
     "DEFAULT_AUTHENTICATION_CLASSES": [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        "rest_framework.authentication.SessionAuthentication",
     ],
 }
 
