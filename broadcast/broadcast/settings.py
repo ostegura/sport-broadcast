@@ -30,6 +30,7 @@ SECRET_KEY = 'af2diwy*6z!$$@pnp9hzd3eor)axxz*8o8^bkky2ih3o$9kvj8'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Application definition
@@ -41,9 +42,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework_swagger',
+    'corsheaders',
     'django_filters',
     'core',
-    'rest_framework',
     'jwtauth',
 ]
 
@@ -61,6 +64,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         "rest_framework.authentication.SessionAuthentication",
     ],
+    "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser", ],
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
 }
 
 JWT_AUTH = {
@@ -76,6 +81,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'broadcast.urls'

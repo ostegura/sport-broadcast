@@ -1,14 +1,18 @@
-# from django.urls import path
-# from .views import (CommentDeleteView, CommentListView,
-#                     CommentDetailView, )
+from django.urls import path, include
 
-# # from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework import routers
 
-# urlpatterns = [
-#     path('comments/', CommentListView.as_view()),
-#     path('comments/<int:pk>/', CommentDetailView.as_view()),
-#     path('comments/<int:pk>/delete',
-#          CommentDeleteView.as_view()),
-# ]
+from core.views import *
 
-# # urlpatterns = format_suffix_patterns(urlpatterns)
+# Routers provide an easy way of automatically determining the URL conf.
+router = routers.DefaultRouter()
+router.register(r'users', UserViewSet)
+router.register(r'broadcastTypes', BroadcastTypeViewSet)
+router.register(r'broadcasts', BroadcastViewSet)
+router.register(r'events', EventViewSet)
+router.register(r'comments', CommentViewSet)
+
+
+urlpatterns = [
+    path('', include(router.urls)),
+]
